@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<title>CamEffects</title>
+<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+<div id="mySidenav" class="sidenav">
+<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+<br>
+<span class="sidenavtext" >Webcam:</span><br>
+<select id="whichcam">
+<option value="0">back cam</option>
+<option value="1">front cam</option>
+</select>
+<hr>
+<span class="sidenavtext">Select Video File:</span><br>
+<input type="file" id="file_input2">
+<br>
+<input type="button" value="upload" id="file_button" onclick="getFileInput()">
+<br>
+
+</div>
+
+
+
+<span id="headbar_1" class="headbar">
+<span onclick="openNav()" class="menu_btn">&#9776; </span>
+
+<span class="categoryselect">
+<select id="pickCategory">
+</select>
+</span>
+
+<span class="effectselect">
+<select id="pickeffect">
+</select>
+</span>
+
+<span id="btnGroupAll">
+<span id="btnGroup1">
+<button type="button" id="StartCam" class="headbar_btn" onclick="StartCam()"><span class="btn_name">StartCam</span></button >
+<button type="button" id="StopCam" class="headbar_btn" onclick="StopCam()"><span class="btn_name">StopCam </span></button >
+</span>
+<span id="btnGroup2">
+<button type="button" id="CaptureImg" class="headbar_btn" onclick="downloadCanvasImage()"><span class="btn_name">Capture</span> </button >
+</span>
+<span id="btnGroup3">
+<button type="button" id="browse_button" class="headbar_btn" onclick="document.getElementById('file_input').click()"><span class="btn_name">Browse</span></button >
+<span><input type="file" id="file_input" style="display:none"></span>
+<button type="button" id="upload_button" class="headbar_btn" onclick="getFileInput()"><span class="btn_name">Upload</span></button >
+</span>
+<span id="btnGroup4">
+<button type="button" id="RefreshImg" class="headbar_btn" onclick="RefreshCanvasImage()"><span class="btn_name">Refresh </span></button >
+</span>
+<span id='upfilename'></span>
+
+ 
+<span id='checkbox_1'>
+<input type="checkbox" id="check_1" name="check_1" value="1" checked onclick="check_1()"><label for="check_1" > display original </label>
+</span>
+<span id='checkbox_2'>
+<input type="checkbox" id="check_2" name="check_2" value="1" checked="" onclick="check_2()"><label for="check_2" > sub inputs </label>
+</span>
+</span>
+</span>
+
+<br>
+<div id='subinputs'></div>
+<br>
+<img id="myimage">
+<video  class="player2 vsc initialized"></video>
+<div class="container">
+	<canvas class="photo"></canvas>
+	<canvas id="obj" width="256" height="256"></canvas>
+</div>
+
+<script src='core.js'></script>
+<script src='assets.js'></script>
+<script>
+
+//initializations
+var MediaStream=null;
+var ccnt=0;
+let intervalID = null;
+var width = 1;
+var height = 1;
+var CurrentInputType=0;//1-video,2-image
+//change to object
+var GreenDigit_flag=true;
+var d_im1=0;
+var d_im2=0;
+var HudMaskImage1=0;
+var HudMaskget_flag=true;
+var mousePos=0;
+var currentObject=0;
+var last_effect=0;
+
+//--for facedetection---
+var initialized = false;
+var update_memory=[];
+var facefinder_classify_region=[];
+var do_puploc=[];
+
+var jsloadedflag = false;
+var is_cv_loaded=false;
+var upfilename_len=25;
+
+
+curColor = [0,255,0];
+drawingAreaX = 0;
+drawingAreaY = 0;
+
+
+let split = 0;
+var framecount=0;
+var framecount_local=0;
+var effect_name='';
+var noisedata = 0;
+var noisedata2=0;
+var PreviousFrames=[];//max length 8
+var NframeToStore=8;
+var InputFieldsAll=new Array(10);
+
+// set CSS variable
+//document.documentElement.style.setProperty(`--assets_1`, assets_1);				   
+
+var icon_1="url('"+assets_1[0].replace(/(\r\n|\n|\r)/gm, "")+"')";
+document.getElementById("StartCam").style.backgroundImage = icon_1;
+var icon_2="url('"+assets_1[1].replace(/(\r\n|\n|\r)/gm, "")+"')";
+document.getElementById("StopCam").style.backgroundImage = icon_2;
+var icon_3="url('"+assets_1[2].replace(/(\r\n|\n|\r)/gm, "")+"')";
+document.getElementById("CaptureImg").style.backgroundImage = icon_3;
+var icon_4="url('"+assets_1[3].replace(/(\r\n|\n|\r)/gm, "")+"')";
+document.getElementById("browse_button").style.backgroundImage = icon_4;
+var icon_5="url('"+assets_1[4].replace(/(\r\n|\n|\r)/gm, "")+"')";
+document.getElementById("upload_button").style.backgroundImage = icon_5;
+var icon_6="url('"+assets_1[5].replace(/(\r\n|\n|\r)/gm, "")+"')";
+document.getElementById("RefreshImg").style.backgroundImage = icon_6;
+
+
+var camchoices=["environment","user"];
+var currentcam=camchoices[0];
+
+//  [script namespace, display name]
+var EffectCategories={
+'1':['effects1','Effects'],
+};
+
+
+const video = document.querySelector('.player2');
+const canvas = document.querySelector('.photo');
+const ctx = canvas.getContext('2d');
+var input_1 = document.getElementById("file_input");
+var upfilename = document.getElementById("upfilename");
+var myimage = document.getElementById("myimage");
+var div_1 = document.getElementById("subinputs");
+
+var element_0 = document.getElementById("pickCategory");
+var element = document.getElementById("pickeffect");
+var element2 = document.getElementById("whichcam");
+var element3 = document.getElementById("check_1");
+var element4 = document.getElementById("check_2");
+
+
+for (var i = 1; i <= Object.keys(EffectCategories).length; i++) {
+  element_0.add(new Option(EffectCategories[i][1], i));// "TheText", "TheValue"
+}
+
+
+// to get last used category
+var last_category = sessionStorage.getItem('last_category') || 'all';
+if (last_category !== 'all') {
+	element_0.value=last_category;
+	setCategoryOptions(last_category);
+} else {
+	setCategoryOptions('1');
+	element_0.value='1';
+}
+
+function setCategoryOptions(in_value){
+while (element.options.length) element.remove(0);
+var cate_name=EffectCategories[in_value][0];
+if (typeof(window[cate_name])!='function' ){
+var srclink='PixelEffects.'+cate_name+'.js';
+loadJs(srclink, function() {
+currentObject=new window[cate_name];
+if ('AssetLink' in currentObject){
+loadJs(currentObject.AssetLink, function() {
+	currentObject.is_AssetsModule_loaded=jsloadedflag;
+	console.log('assets loaded');
+});
+}
+//console.log(currentObject)
+var fnnamesall=Object.keys(currentObject.FnNames);
+for (var i = 0; i < fnnamesall.length; i++) {
+  element.add(new Option(currentObject.FnNames[fnnamesall[i]][1], fnnamesall[i]));// "TheText", "TheValue"
+}
+setEffectOptions();
+
+});
+is_js_loaded=jsloadedflag;
+} else {// if js script already loaded
+currentObject=new window[cate_name];
+var fnnamesall=Object.keys(currentObject.FnNames);
+for (var i = 0; i < fnnamesall.length; i++) {
+  element.add(new Option(currentObject.FnNames[fnnamesall[i]][1], fnnamesall[i]));// "TheText", "TheValue"
+}
+setEffectOptions();
+}
+}
+
+element_0.onchange=function(){
+sessionStorage.setItem('last_category', element_0.value);
+sessionStorage.setItem('last_effect', '1');
+setCategoryOptions(element_0.value);
+}
+
+if(input_1.files.length>0) {
+var filename=input_1.files[0].name;
+set_upfilename(filename);
+} else {
+upfilename.innerHTML="\u00A0".repeat(upfilename_len);
+}
+
+input_1.onchange=function(){
+const filename=input_1.files[0].name;
+set_upfilename(filename);
+};
+
+function set_upfilename(filename){
+var cutlen=Math.floor(upfilename_len/2)-1;
+if(filename.length<upfilename_len){upfilename.innerHTML=filename+("\u00A0".repeat(upfilename_len-filename.length));}
+if(filename.length>=upfilename_len){upfilename.innerHTML=filename.slice(0,cutlen)+'..'+filename.slice(filename.length-cutlen,filename.length);}
+}
+
+
+function setEffectOptions(){
+framecount_local=0;
+currentObject.is_Asset_retrieved=false;
+last_effect = sessionStorage.getItem('last_effect') || 'all';
+if (last_effect !== 'all') {
+if(last_effect>Object.keys(currentObject.FnNames).length){last_effect='1';};
+	element.value=last_effect;
+	currentEffect=currentObject[currentObject.FnNames[last_effect][0]];
+	effect_name=currentEffect.name;
+	currentObject.set_subinputs();
+
+} else {
+	last_effect='1';
+	element.value=last_effect;
+	currentEffect=currentObject[currentObject.FnNames[last_effect][0]];
+	effect_name=currentEffect.name;
+	currentObject.set_subinputs();
+}
+
+if (CurrentInputType==1){
+paintToCanvas(currentEffect);
+}
+if (CurrentInputType==2) {
+paint2();
+}
+
+}
+
+element.onchange=function(){
+sessionStorage.setItem('last_effect', element.value);
+setEffectOptions();
+}
+
+element2.onchange=function(){
+currentcam=camchoices[element2.value];
+getCamVideo(currentcam);
+video.addEventListener('canplay', function () { paintToCanvas(currentEffect) });
+}
+
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+
+
+</script>
+
+</body>
+
+</html>

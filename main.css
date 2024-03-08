@@ -1,0 +1,225 @@
+/* https://stackoverflow.com/questions/17090571/is-there-a-way-to-set-background-image-as-a-base64-encoded-image/ 
+*/
+
+body {
+  font-family: "Lato", sans-serif;
+  font-size: 100%;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #333333ee;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #ddd;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #fff;
+}
+
+.optionstext{
+  color: #ada;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+.sidenavtext{
+color: #F386FF;
+}
+
+.headbar_btn{
+	//float: left;
+	display: inline-block;
+	background: no-repeat;
+	background-color: #fff;
+	background-size: 5em 3em; // width height  
+	cursor: pointer;
+    width: 5em;
+    height: 5em;
+	text-align: left;
+	line-height: 3em;
+    //overflow: visible;
+}
+
+.headbar_btn:hover{
+	//background-color: #00ff00;
+	color: #005500;
+	background-size: 5em 3.7em; // width height  
+	//background: linear-gradient(#1095c1 0 0)  no-repeat;
+	//transition: .4s;
+}
+
+.btn_name {
+position: absolute;
+}
+
+.headbar{
+	display:inline-block;
+	background-color: #ddd;
+  //background: linear-gradient(white 0 0);
+  //background-size: auto 20px;
+  //background-position: center;
+  //background-repeat: no-repeat;
+	width: 100%;
+	height:5rem;
+	//border-radius: 5px 5px 5px;
+	border: 1px solid;
+	padding-left: 5px;
+	//overflow: visible;
+}
+
+.menu_btn{
+display:inline-block;
+//float: left;
+text-align: center;
+font-size: 2em;
+cursor:pointer;
+background-color: #eee;
+  //width: 100%;
+height:2.5em;
+}
+
+.categoryselect{
+display:inline-block;
+vertical-align: top;
+text-align: center;
+background-color: #eee;
+height:4.8em;
+margin-top: 1px;
+}
+
+.effectselect{
+display:inline-block;
+vertical-align: top;
+text-align: center;
+background-color: #eee;
+height:4.8em;
+margin-top: 1px;
+}
+
+
+#pickCategory{
+  margin-top: 1.2em;
+  margin-left: 2px;
+  margin-right: 2px;
+  width: 10em;
+  //padding: 5px 35px 5px 5px;
+  //font-size: 16px;
+  border: 1px solid #ccc;
+  height: 3em;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right .7em top 50%, 0 0;
+  background-size: .75em auto, 100%;
+//  color: #f00;
+  background-color: #efe;
+}
+
+#pickeffect{
+  margin-top: 1.2em;
+  margin-left: 2px;
+  margin-right: 2px;
+  width: 15em;
+  //padding: 5px 35px 5px 5px;
+  //font-size: 16px;
+  border: 1px solid #ccc;
+  height: 3em;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right .7em top 50%, 0 0;
+  background-size: .75em auto, 100%;
+//  color: #f00;
+  background-color: #efe;
+}
+
+#pickeffect:hover{
+background-color: #cfc;
+}
+
+#pickCategory:hover{
+background-color: #cfc;
+}
+
+#btnGroupAll{
+display:inline-block;
+background-color: #eef;
+height:4.8em;
+border: solid 1px;
+//margin: 1px;
+}
+
+#btnGroup1, #btnGroup2, #btnGroup3, #btnGroup4{
+display:inline-block;
+background-color: #fee;
+height:4.5em;
+border: solid 1px;
+//margin: 1px;
+}
+
+#upfilename{
+display:inline-block;
+vertical-align: top;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+background-color: #fee;
+height:4.5em;
+border: solid 1px;
+//margin: 1px;
+}
+
+#checkbox_1{
+display:inline-block;
+vertical-align: top;
+   -webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   box-sizing: border-box;
+background-color: #fee;
+height:4.5em;
+border: solid 1px;
+}
+
+#checkbox_2{
+display:inline-block;
+vertical-align: top;
+   -webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   box-sizing: border-box;
+background-color: #fee;
+height:4.5em;
+border: solid 1px;
+}
+
+
