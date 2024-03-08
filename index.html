@@ -82,6 +82,8 @@
 
 <script src='core.js'></script>
 <script src='assets.js'></script>
+<script src='PixelEffects.Effects1.js'></script>
+
 <script>
 
 //initializations
@@ -187,6 +189,7 @@ function setCategoryOptions(in_value){
 while (element.options.length) element.remove(0);
 var cate_name=EffectCategories[in_value][0];
 if (typeof(window[cate_name])!='function' ){
+/*
 var srclink='PixelEffects.'+cate_name+'.js';
 loadJs(srclink, function() {
 currentObject=new window[cate_name];
@@ -205,6 +208,15 @@ setEffectOptions();
 
 });
 is_js_loaded=jsloadedflag;
+*/
+currentObject=new window[cate_name];
+var fnnamesall=Object.keys(currentObject.FnNames);
+for (var i = 0; i < fnnamesall.length; i++) {
+  element.add(new Option(currentObject.FnNames[fnnamesall[i]][1], fnnamesall[i]));// "TheText", "TheValue"
+}
+setEffectOptions();
+
+
 } else {// if js script already loaded
 currentObject=new window[cate_name];
 var fnnamesall=Object.keys(currentObject.FnNames);
